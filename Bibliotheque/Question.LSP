@@ -1,5 +1,3 @@
-(princ "\nRoutines Question chargé")
-
 ;;;----------------------------------------------------------------------------------------------
 ;;;                                                                                              
 ;;;                                  Fonction INPUT                                              
@@ -339,6 +337,6 @@
   (set (read var_sv) (eval (read var_name)))
 )
 
- ;|«Visual LISP© Format Options»
-(100 2 40 2 nil "Fin de " 100 9 0 0 0 T nil nil T)
-;*** NE PAS AJOUTER de texte au-dessous du commentaire! ***|;
+
+;;;================================================================================================;;;
+(princ)

@@ -1,5 +1,3 @@
-(princ "\nRoutines Liste chargé")
-
 ;; Manipulation des listes
 
 ;;; POSITION - retourne l'index du premier élément dans la liste,
@@ -345,6 +343,6 @@
     (strcat (vl-princ-to-string (car lst)) sep (lst2str (cdr lst) sep))
     (vl-princ-to-string (car lst))))
 
- ;|«Visual LISP© Format Options»
-(200 2 40 0 nil "Fin de " 100 9 0 0 0 T nil nil T)
-;*** NE PAS AJOUTER de texte au-dessous du commentaire! ***|;
+
+;;;================================================================================================;;;
+(princ)

@@ -1,4 +1,3 @@
-(princ "\nRoutines Bloc chargé")
 
 ;;; LST_ATT_BLOC - Liste des attributs d'un bloc
 ;;;
@@ -24,3 +23,7 @@
   )
   (reverse liste)
 )
+
+
+;;;================================================================================================;;;
+(princ)

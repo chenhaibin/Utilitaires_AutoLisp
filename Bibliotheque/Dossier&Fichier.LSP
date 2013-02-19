@@ -1,5 +1,3 @@
-(princ "\nRoutines Dossier&Fichier chargé")
-
 ;;; LIST-DRIVES - Liste des lecteurs disponibles
 ;;; By Tony Tanzillo
 (defun list-drives (/ c i)
@@ -127,3 +125,7 @@ OutVal
     )
   )
 )
+
+
+;;;================================================================================================;;;
+(princ)

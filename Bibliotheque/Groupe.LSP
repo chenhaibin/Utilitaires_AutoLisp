@@ -1,5 +1,3 @@
-(princ "\nRoutines Groupe chargé")
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Retourne les noms des groupes de l'objet selectionné
@@ -30,3 +28,8 @@
 (defun addgroup	(group ename / entname i)
   (entmod (reverse (cons (cons 340 ename) (reverse (entget group)))))
 )
+
+
+
+;;;================================================================================================;;;
+(princ)

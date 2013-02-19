@@ -1,5 +1,3 @@
-(princ "\nRoutines Selection chargé")
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Selection -> liste
@@ -26,7 +24,5 @@
     (repeat (setq n (sslength ss)) (setq lst (cons (apply fct (list (ssname ss (setq n (1- n))))) lst)))))
 
 
-
- ;|«Visual LISP© Format Options»
-(200 2 40 0 nil "Fin de " 100 9 0 0 0 T nil nil T)
-;*** NE PAS AJOUTER de texte au-dessous du commentaire! ***|;
+;;;================================================================================================;;;
+(princ)

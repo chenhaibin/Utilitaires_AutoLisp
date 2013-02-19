@@ -1,5 +1,4 @@
-'("$Id: sort.lsp 1.11 1996/07/18 15:14:07 Reini Exp $")
-;;;* SORT.LSP
+;;;* SORT.LSP
 ;;;+------------------------------------------------------------------------+
 ;;;| URBAN X Utilities for AutoCAD                                   Ver 2.9|
 ;;;| (c) 1991-96 Reinhard URBAN. All rights reserved                        |
@@ -200,3 +199,7 @@
 (defun cmpstr (x1 x2) (> (strcmp x1 x2) 0))
 (defun cmpnum (x1 x2) (> x1 x2))
 (defun cmppts (x1 x2) (> (car x1) (car x2)))
+
+
+;;;================================================================================================;;;
+(princ)

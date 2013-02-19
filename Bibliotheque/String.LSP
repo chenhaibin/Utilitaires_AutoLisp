@@ -1,5 +1,3 @@
-(princ "\nRoutines String chargé")
-
 ;; fonction de transformation d'une chaine en liste
 ;; chaque mot séparé par un espace devient un atom
 (defun str_to_lst (str / i mot list_mot)
@@ -182,6 +180,5 @@
 
 
 
- ;|«Visual LISP© Format Options»
-(200 2 40 2 nil "Fin de " 100 9 0 0 0 T nil nil T)
-;*** NE PAS AJOUTER de texte au-dessous du commentaire! ***|;
+;;;================================================================================================;;;
+(princ)

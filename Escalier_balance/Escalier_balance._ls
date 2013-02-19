@@ -196,24 +196,23 @@
 			    )
 	  Var_MarchePaliere marche_paliere
     )
-    (setq p	   (initget 128 "Nb")
-	  GironMax (getreal (strcat "\nIndiquez le giron maximum ou [Nb] <" (rtos Var_GironMax 2) ">: "))
-	  nb_giron (cond
-		     ((= GironMax "Nb")
-		      (setq nb_giron	(getint (strcat "\nIndiquez le nb de giron <" (rtos Var_NbGiron 2) "> : "))
-			    nb_giron	(if nb_giron
-					  nb_giron
-					  Var_NbGiron
-					)
-			    Var_NbGiron	nb_giron
+    (setq p	      (initget 128 "GironMax")
+	  nb_giron    (getint (strcat "\nIndiquez le nb de giron ou [GironMax] <" (rtos Var_NbGiron 2 0) "> : "))
+	  nb_giron    (cond
+			((= nb_giron "GironMax")
+			 (setq GironMax	    (getreal (strcat "\nIndiquez le giron maximum <" (rtos Var_GironMax 2) "> : "))
+			       GironMax	    (if	GironMax
+					      GironMax
+					      Var_GironMax
+					    )
+			       Var_GironMax GironMax
+			 )
+			 (1+ (fix (/ (Courbe-Longueur (car sel_ldf)) GironMax)))
+			)
+			(nb_giron nb_giron)
+			(t Var_NbGiron)
 		      )
-		     )
-		     ((numberp GironMax)
-		      (setq Var_GironMax GironMax)
-		      (1+ (fix (/ (Courbe-Longueur (car sel_ldf)) GironMax)))
-		     )
-		     (t Var_NbGiron)
-		   )
+	  Var_NbGiron nb_giron
     )
     (setq
       ldf	 (car sel_ldf)

@@ -1,5 +1,3 @@
-(princ "\nRoutines Vecteur&Matrice chargé")
-
 ;;; Quelques routines de calcul vectoriel et matriciel.
 
 
@@ -368,7 +366,7 @@
 ;; Evalue si une matrice de transformation (3X3 ou 4X4) a un échelle uniforme
 
 (defun uniform-p (m)
-  (and (or (= 3 (length m)) (setq m (mapcar 'butlast (butlast m))))
+  (and (or (= 3 (length m)) (setq m (mapcar 'VMbutlast (VMbutlast m))))
        (vl-every
 	 (function
 	   (lambda (v)
@@ -490,9 +488,9 @@
 
 (defun cofact (i j m)
   (* (determ
-       (remove-i
+       (VMremove-i
 	 (1- i)
-	 (mapcar (function (lambda (x) (remove-i (1- j) x))) m)
+	 (mapcar (function (lambda (x) (VMremove-i (1- j) x))) m)
        )
      )
      (expt -1 (+ i j))
@@ -585,10 +583,10 @@
 (defun RCS2WCS (pt mat)
   (setq pt (trans pt 0 0))
   (if (= 3 (length (car mat)))
-    (mapcar '+ (mxv (trp (butlast mat)) pt) (last mat))
+    (mapcar '+ (mxv (trp (VMbutlast mat)) pt) (last mat))
     (mapcar '+
-	    (mxv (mapcar 'butlast (butlast mat)) pt)
-	    (butlast (mapcar 'last mat))
+	    (mxv (mapcar 'VMbutlast (VMbutlast mat)) pt)
+	    (VMbutlast (mapcar 'last mat))
     )
   )
 )
@@ -606,7 +604,7 @@
     (setq mat (append (trp mat) (list '(0.0 0.0 0.0 1.0))))
   )
   (setq mat (inv-mat mat))
-  (mapcar '+ (mxv mat pt) (butlast (mapcar 'last mat)))
+  (mapcar '+ (mxv mat pt) (VMbutlast (mapcar 'last mat)))
 )
 
 ;; TransNested (gile)
@@ -706,21 +704,25 @@
 
 ;; Fonctions de manipulation des listes utilisées dans les routines précédentes
 
-;; REMOVE-I
+;; VMremove-i
 ;; Retourne la liste privée de l'élément à l'indice spécifié (premier élément = 0)
 ;;
 ;; Arguments : la liste et l'indice de l'élément à supprimer
 
-(defun remove-i	(ind lst)
+(defun VMremove-i	(ind lst)
   (if (or (zerop ind) (null lst))
     (cdr lst)
-    (cons (car lst) (remove-i (1- ind) (cdr lst)))
+    (cons (car lst) (VMremove-i (1- ind) (cdr lst)))
   )
 )
 
-;; BUTLAST
+;; VMbutlast
 ;; Retourne la liste privée du dernier élément
 ;;
 ;; Argument : une liste
 
-(defun butlast (l) (reverse (cdr (reverse l))))
+(defun VMbutlast (l) (reverse (cdr (reverse l))))
+
+
+;;;================================================================================================;;;
+(princ)

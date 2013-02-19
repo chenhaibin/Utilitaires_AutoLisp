@@ -1,5 +1,3 @@
-(princ "\nRoutines Nombre&Angle chargé")
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Ang<2pi Retourne l'angle, à 2*k*pi près, compris entre 0 et 2*pi
@@ -61,6 +59,6 @@
     (vl-list->string (remove-right 48 chn-lst))
     (vl-list->string chn-lst)))
 
- ;|«Visual LISP© Format Options»
-(200 2 40 0 nil "Fin de " 100 9 0 0 0 T nil nil T)
-;*** NE PAS AJOUTER de texte au-dessous du commentaire! ***|;
+
+;;;================================================================================================;;;
+(princ)

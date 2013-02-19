@@ -1,4 +1,6 @@
-;;-------------------------------------------------------------------------------;; Program Name: GetExcel.lsp;; Created By:   Terry Miller (Email: terrycadd@yahoo.com)
+;;-------------------------------------------------------------------------------
+;; Program Name: GetExcel.lsp
+;; Created By:   Terry Miller (Email: terrycadd@yahoo.com)
 ;;               (URL: http://web2.airmail.net/terrycad)
 ;; Date Created: 9-20-03
 ;; Function:     Several functions to get and put values into Excel cells.
@@ -504,5 +506,6 @@
   )
 )
 
-;;-------------------------------------------------------------------------------
+
+;;;================================================================================================;;;
 (princ)

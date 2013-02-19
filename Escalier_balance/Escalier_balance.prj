@@ -1,20 +1,27 @@
-;;; VLisp project file [V2.0] Escalier_balance saved to:[C:/Users/billiet-pao/AutoCAD/AutoLisp/1_Autoload/Escalier_balance] at:[2/4/13] 
+;;; VLisp project file [V2.0] Escalier_balance saved to:[D:/Mes documents/Acad - Personalisation/AutoLisp/Utilitaires_AutoLisp/Escalier_balance] at:[2/19/13] 
 (VLISP-PROJECT-LIST
   :NAME
   Escalier_balance
   :OWN-LIST
-  ("C:/Users/billiet-pao/AutoCAD/AutoLisp/1_Autoload/Bibliotheque/Selection"
-    "C:/Users/billiet-pao/AutoCAD/AutoLisp/1_Autoload/Bibliotheque/Courbe"
-    "C:/Users/billiet-pao/AutoCAD/AutoLisp/1_Autoload/Bibliotheque/Vecteur&Matrice"
-    "C:/Users/billiet-pao/AutoCAD/AutoLisp/1_Autoload/Bibliotheque/Liste"
-    "C:/Users/billiet-pao/AutoCAD/AutoLisp/1_Autoload/Bibliotheque/Entites"
-    "C:/Users/billiet-pao/AutoCAD/AutoLisp/1_Autoload/Escalier_balance/Escalier_balance")
+  ("D:/Mes documents/Acad - Personalisation/AutoLisp/Utilitaires_AutoLisp/Escalier_balance/Escalier_balance"
+    "D:/Mes documents/Acad - Personalisation/AutoLisp/Utilitaires_AutoLisp/Bibliotheque/Entites"
+    "D:/Mes documents/Acad - Personalisation/AutoLisp/Utilitaires_AutoLisp/Bibliotheque/Liste"
+    "D:/Mes documents/Acad - Personalisation/AutoLisp/Utilitaires_AutoLisp/Bibliotheque/Vecteur&Matrice"
+    "D:/Mes documents/Acad - Personalisation/AutoLisp/Utilitaires_AutoLisp/Bibliotheque/Courbe"
+    "D:/Mes documents/Acad - Personalisation/AutoLisp/Utilitaires_AutoLisp/Bibliotheque/Selection")
   :FAS-DIRECTORY
-  "C:\\Users\\billiet-pao\\AutoCAD\\AutoLisp\\1_Autoload\\Escalier_balance"
+  "D:\\Mes documents\\Acad - Personalisation\\AutoLisp\\Utilitaires_AutoLisp\\Escalier_balance"
   :TMP-DIRECTORY
-  "C:/Users/billiet-pao/AutoCAD/AutoLisp/1_Autoload/Escalier_balance/tmp"
+  "D:\\Mes documents\\Acad - Personalisation\\AutoLisp\\Utilitaires_AutoLisp\\Escalier_balance\\tmp"
   :PROJECT-KEYS
-  (:BUILD (:OPTIMIZE :LOCALIZE :MAKE-INTERNAL) :MERGED T :SAFE-MODE T :MSGLEVEL 2)
+  (:BUILD (:OPTIMIZE :LOCALIZE :MAKE-INTERNAL)
+	  :MERGED
+	  T
+	  :SAFE-MODE
+	  T
+	  :MSGLEVEL
+	  2
+  )
   :CONTEXT-ID
   :AUTOLISP
 )
