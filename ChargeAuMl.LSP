@@ -1,0 +1,20 @@
+;;								;;
+;; Charge au ml à partir d'une charge au m² et d'une distance	;;
+;;								;;
+(defun c:ch (/ chP chD dist valP valD)
+  (terpri)
+  (setq chP (getreal "Charge répartie en daN/m² Pression :")
+	chD (getreal "Charge répartie en daN/m² Dépression :"))
+  (while (and chP chD (setq dist (getdist)))
+    (setq valP (* chP dist 0.001)
+	  valP (1+ (fix valP))
+	  valD (* chD dist 0.001)
+	  valD (1+ (fix valD))
+    )
+    (terpri)
+    (princ valP)
+    (princ " / ")
+    (princ valD)
+  )
+  (princ)
+)
