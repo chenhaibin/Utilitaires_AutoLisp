@@ -82,6 +82,8 @@
 	    i	(1+ i)
       )
       (command "_EXPLODE" blk "")
+
+      
     )
   )
 
@@ -142,7 +144,7 @@
 		   '((0 . "TEXT") (8 . "QUANTITE") (410 . "Model"))
 	    )
   )
-  (if Sel
+  (if (and Sel (> (sslength Sel) (sslength )))
     (progn
       (setq Sel	(vl-remove-if 'listp (mapcar 'cadr (ssnamex Sel)))
 	    Sel	(vl-sort Sel
@@ -164,36 +166,20 @@
       )
       (if (> (length Sel) 1)
 	(while (< i (1- (length Sel)))
-	  (setq	ss (ssadd)
+	  (setq	i  (1+ i)
+		T1 (nth i Sel)
 		i  (1+ i)
-		ss (ssadd (nth i Sel) ss)
-		i  (1+ i)
-		ss (ssadd (nth i Sel) ss)
+		T2 (nth i Sel)
+		IndexT1 (cdr (assoc '1 (entget T1)))
+		IndexT2 (cdr (assoc '1 (entget T2)))
+		Index (strcat IndexT1 " " IndexT2)
+		T1 (subst (cons '1 Index) (assoc 1 (entget T1)) (entget T1))
 	  )
-	  (command "TXT2MTXT" ss "")
+	  (if 
+	  (entmod T1)
+	  (entdel T2)
 	)
       )
-
-      (setq Sel	'nil
-	    Sel	(ssget "_X"
-		       '((0 . "MTEXT") (8 . "QUANTITE") (410 . "Model"))
-		)
-	    i	0
-      )
-
-      (if Sel
-	(repeat	(sslength Sel)
-	  (setq	ed  (entget (ssname Sel i))
-		val (cdr (assoc '41 ed))
-		ed  (subst (cons '41 (+ val 30)) (assoc '41 ed) ed)
-		i   (1+ i)
-	  )
-	  (entmod ed)
-
-	)
-      )
-
-
     )
   )
 
