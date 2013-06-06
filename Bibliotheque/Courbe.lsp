@@ -3,7 +3,11 @@
 ;;; fin : nil
 
 (defun Courbe-Position (Courbe Point)
-  (if (> (Courbe-DistanceAuPoint Courbe (Courbe-PointLePlusProche Courbe Point) 't)
+  (if (> (Courbe-DistanceAuPoint
+	   Courbe
+	   (Courbe-PointLePlusProche Courbe Point)
+	   't
+	 )
 	 (* (Courbe-Longueur Courbe) 0.5)
       )
     'nil
@@ -14,12 +18,20 @@
 
 ;;; Renvoi le point le plus proche
 (defun Courbe-PointLePlusProche	(Courbe lPoint)
-  (V2D (vlax-curve-getClosestPointTo (vlax-ename->vla-object Courbe) lPoint))
+  (V2D (vlax-curve-getClosestPointTo
+	 (vlax-ename->vla-object Courbe)
+	 lPoint
+       )
+  )
 )
 
 ;;; Renvoi la distance à un point donné à partir du debut ou de la fin
 (defun Courbe-DistanceAuPoint (Courbe Point Fin / dist)
-  (setq dist (vlax-curve-getDistAtPoint (vlax-ename->vla-object Courbe) Point))
+  (setq	dist (vlax-curve-getDistAtPoint
+	       (vlax-ename->vla-object Courbe)
+	       Point
+	     )
+  )
   (if Fin
     dist
     (- (Courbe-Longueur Courbe) dist)
@@ -28,7 +40,11 @@
 
 ;;; Renvoi la liste des distances aux points donnés à partir du debut ou de la fin
 (defun Courbe-ListeDistancesAuxPoints (Courbe lPoint Fin / dist)
-  (mapcar (function (lambda (pt) (Courbe-DistanceAuPoint Courbe pt Fin))) lPoint)
+  (mapcar (function
+	    (lambda (pt) (Courbe-DistanceAuPoint Courbe pt Fin))
+	  )
+	  lPoint
+  )
 )
 
 ;;; Renvoi le point à la distance donnée à partir du debut ou de la fin
@@ -38,13 +54,21 @@
 	       (- (Courbe-Longueur Courbe) Dist)
 	     )
   )
-  (V2D (vlax-curve-getPointAtDist (vlax-ename->vla-object Courbe) Dist))
+  (V2D (vlax-curve-getPointAtDist
+	 (vlax-ename->vla-object Courbe)
+	 Dist
+       )
+  )
 )
 
 
 ;;; Renvoi la liste des points aux distances données à partir du debut ou de la fin
 (defun Courbe-ListePointsAuxDistances (Courbe lDist Fin)
-  (mapcar (function (lambda (dist) (Courbe-PointALaDistance Courbe dist Fin))) lDist)
+  (mapcar (function
+	    (lambda (dist) (Courbe-PointALaDistance Courbe dist Fin))
+	  )
+	  lDist
+  )
 )
 
 ;;; Renvoi le parametre à la distance donnée suivant à partir du debut ou de la fin
@@ -54,12 +78,18 @@
 	       (- (Courbe-Longueur Courbe) Dist)
 	     )
   )
-  (vlax-curve-getParamAtDist (vlax-ename->vla-object Courbe) Dist)
+  (vlax-curve-getParamAtDist
+    (vlax-ename->vla-object Courbe)
+    Dist
+  )
 )
 
 ;;; Renvoi le parametre au point donnée
 (defun Courbe-ParamAuPoint (Courbe Point)
-  (vlax-curve-getParamAtPoint (vlax-ename->vla-object Courbe) Point)
+  (vlax-curve-getParamAtPoint
+    (vlax-ename->vla-object Courbe)
+    Point
+  )
 )
 
 
@@ -74,7 +104,27 @@
 )
 
 ;;; Renvoi la longueur d'une courbe
-(defun Courbe-Longueur (Courbe) (float (vlax-get-property (vlax-ename->vla-object Courbe) 'length)))
+(defun Courbe-Longueur (Courbe / prop)
+  (cond
+    ((member '(0 . "ARC") (entget Courbe))
+     (setq prop 'ArcLength)
+    )
+    ((member '(0 . "CIRCLE") (entget Courbe))
+     (setq prop 'Circumference)
+    )
+    ((member '(0 . "LWPOLYLINE") (entget Courbe))
+     (setq prop 'Length)
+    )
+    ((member '(0 . "LINE") (entget Courbe))
+     (setq prop 'Length)
+    )
+  )
+  (if prop
+    (float
+      (vlax-get-property (vlax-ename->vla-object Courbe) prop)
+    )
+  )
+)
 
 
 ;;; 0 : aucun prolongement

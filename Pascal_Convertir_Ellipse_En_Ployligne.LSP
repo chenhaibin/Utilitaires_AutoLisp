@@ -1,0 +1,6 @@
+(defun c:E2P ()
+  (foreach x (mapcar 'cadr (ssnamex (ssget "X" '((0 . "ELLIPSE")))))
+    (ACET-GEOM-ELLIPSE-TO-PLINE x)
+    (entdel x)
+  )
+)

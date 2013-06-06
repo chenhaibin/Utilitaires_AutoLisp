@@ -72,7 +72,6 @@
 
 ;;; REPLACE
 ;;; Remplace les éléments OLD_ELE par NEW_ELE
-
 (defun replace	(old_ele new_ele lst)
   (if lst
     (mapcar '(lambda (x)
@@ -223,6 +222,19 @@
 (defun trunc-if	 (fun lst)
   (if (and lst (not ((eval fun) (car lst))))
     (cons (car lst) (trunc-if fun (cdr lst)))))
+
+
+;; COMMON-FUZZ
+;; Comme COMMON avec une tolérance dans la comparaison
+
+(defun common-fuzz (l1 l2 fuzz)
+  (if l1
+    (if	(member-fuzz (car l1) l2 fuzz)
+      (cons (car l1) (common-fuzz (cdr l1) l2 fuzz))
+      (common-fuzz (cdr l1) l2 fuzz)
+    )
+  )
+)
 
 ;; MEMBER-FUZZ
 ;; Comme MEMBER avec une tolérance dans la comparaison

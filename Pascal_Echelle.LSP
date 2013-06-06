@@ -1,0 +1,6 @@
+(defun c:eh ()
+  (command "ECHELLE" "_all" "" '(0.0 0.0) 0.03937)
+  (setvar "PDSIZE" 2)
+  (command "_qsave")
+  (command "_close")
+)
