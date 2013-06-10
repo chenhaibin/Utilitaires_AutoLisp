@@ -162,3 +162,31 @@
     (list c (angle c p1) (angle c p2) (abs r) t)
   )
 )
+
+;; Arc to Bulge  -  Lee Mac
+;; c     - center
+;; a1,a2 - start, end angle
+;; r     - radius
+;; Returns: (<vertex> <bulge> <vertex>)
+
+(defun ArcToBulge (c a1 a2 r)
+  (list
+    (polar c a1 r)
+    ((lambda (a) (/ (sin a) (cos a)))
+      (/ (rem (+ pi pi (- a2 a1)) (+ pi pi)) 4.0)
+    )
+    (polar c a2 r)
+  )
+)
+
+(defun PtToBulge (c pt1 pt2)
+  (list
+    pt1
+    ((lambda (a) (/ (sin a) (cos a)))
+      (/ (rem (+ pi pi (- (angle c pt2) (angle c pt1))) (+ pi pi))
+	 4.0
+      )
+    )
+    pt2
+  )
+)
