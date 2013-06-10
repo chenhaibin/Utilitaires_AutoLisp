@@ -40,6 +40,28 @@
   (entlast)
 )
 
+(defun make_arc	(dxf v /)
+  (entmake
+    (append
+      '((0 . "ARC") (67 . 0) (410 . "Model") (8 . "0"))
+      (list (cons '60 v))
+      (mapcar (function	(lambda	(x y)
+			  (cons	x
+				(if (listp y)
+				  (v2d y)
+				  y
+				)
+			  )
+			)
+	      )
+	      '(10 50 51 40)
+	      dxf
+      )
+    )
+  )
+  (entlast)
+)
+
 (defun make_ray	(dxf v /)
   (entmake
     (append
@@ -71,7 +93,3 @@
   )
   (entlast)
 )
-
-
-;;;================================================================================================;;;
-(princ)

@@ -146,5 +146,19 @@
   )
 )
 
-;;;================================================================================================;;;
-(princ)
+;; Bulge to Arc  -  Lee Mac
+;; p1 - start vertex
+;; p2 - end vertex
+;; b  - bulge
+;; d  - start at start vertex
+;; Returns: (<center> <start angle> <end angle> <radius> <StartAtStartVertex>)
+
+(defun BulgeToArc (p1 p2 b / c r)
+  (setq	r (/ (* (distance p1 p2) (1+ (* b b))) 4 b)
+	c (polar p1 (+ (angle p1 p2) (- (/ pi 2) (* 2 (atan b)))) r)
+  )
+  (if (minusp b)
+    (list c (angle c p2) (angle c p1) (abs r) nil)
+    (list c (angle c p1) (angle c p2) (abs r) t)
+  )
+)

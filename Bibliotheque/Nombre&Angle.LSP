@@ -58,7 +58,3 @@
   (if (member 46 chn-lst)
     (vl-list->string (remove-right 48 chn-lst))
     (vl-list->string chn-lst)))
-
-
-;;;================================================================================================;;;
-(princ)

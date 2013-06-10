@@ -11,6 +11,9 @@ tmp/
 *.bak
 *.swp
 *.ls
+*._ls
+*.LS
+*._LS
 *~.nib
 local.properties
 .classpath
