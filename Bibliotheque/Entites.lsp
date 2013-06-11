@@ -1,4 +1,4 @@
-(defun make_lwpline (dxf v /)
+(defun make_lwpline (LstDxf v /)
   (entmake
     (append
       (list
@@ -10,7 +10,7 @@
 	(cons '60 v)
 	'(100 . "AcDbPolyline")
       )
-      (list (cons '90 (length dxf)))
+      (list (cons '90 (length LstDxf)))
       (list (cons '43 0.0))
       (apply
 	'append
@@ -18,7 +18,7 @@
 	  (function
 	    (lambda (x) (list (cons '10 (v2d x)) (cons '42 0.0)))
 	  )
-	  dxf
+	  LstDxf
 	)
       )
     )
@@ -26,21 +26,21 @@
   (entlast)
 )
 
-(defun make_line (dxf v /)
+(defun make_line (LstDxf v /)
   (entmake
     (append
       '((0 . "LINE") (67 . 0) (410 . "Model") (8 . "0"))
       (list (cons '60 v))
       (mapcar (function (lambda (x y) (cons x (v2d y))))
 	      '(10 11)
-	      dxf
+	      LstDxf
       )
     )
   )
   (entlast)
 )
 
-(defun make_arc	(dxf v /)
+(defun make_arc	(LstDxf v /)
   (entmake
     (append
       '((0 . "ARC") (67 . 0) (410 . "Model") (8 . "0"))
@@ -55,14 +55,14 @@
 			)
 	      )
 	      '(10 50 51 40)
-	      dxf
+	      LstDxf
       )
     )
   )
   (entlast)
 )
 
-(defun make_ray	(dxf v /)
+(defun make_ray	(LstDxf v /)
   (entmake
     (append
       (list
@@ -76,7 +76,7 @@
       )
       (mapcar (function (lambda (x y) (cons x (v2d y))))
 	      '(10 11)
-	      dxf
+	      LstDxf
       )
     )
   )
@@ -84,11 +84,11 @@
 )
 
 
-(defun make_point (dxf v /)
+(defun make_point (LstDxf v /)
   (entmake (append
 	     '((0 . "POINT") (410 . "Model") (8 . "0"))
 	     (list (cons '60 v))
-	     (list (cons '10 (v2d dxf)))
+	     (list (cons '10 (v2d LstDxf)))
 	   )
   )
   (entlast)

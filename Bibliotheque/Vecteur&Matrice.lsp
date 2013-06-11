@@ -157,7 +157,6 @@
 )
 
 ;; Trigo  -  (gile)
-;; Returns the midpoint of two points
 
 (defun Trigo ( p1 p2 p3 )
   (< (sin (- (angle p1 p2) (angle p1 p3))) -1e-14)

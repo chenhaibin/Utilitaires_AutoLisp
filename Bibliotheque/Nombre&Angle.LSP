@@ -18,7 +18,7 @@
     ((minusp ang)
      (- (* 2 pi) (ang2pi (abs ang)))
     )
-    (t ang)
+    (t (ang2pi ang))
   )
 )
 

@@ -1,112 +1,42 @@
-(defun c:RCP ()
-
-
-  (setvar "CMDECHO" 0)
-
-  (command "_zoom" "_e")
-
-  (command "_qsave")
-
-  (setq	Sel   (ssget "_X" '((0 . "LINE") (8 . "LIGNES DE PLIAGE")))
-	i     0
-	PtMin '(1000000 1000000)
-	PtMax '(-1000000 -1000000)
-  )
-
-  (if Sel
-    (repeat (sslength Sel)
-      (setq Ligne (entget (ssname Sel i))
-	    PtMin (mapcar 'min
-			  PtMin
-			  (car (dxf '10 Ligne))
-			  (car (dxf '11 Ligne))
-		  )
-	    PtMax (mapcar 'max
-			  PtMax
-			  (car (dxf '10 Ligne))
-			  (car (dxf '11 Ligne))
-		  )
-      )
-      (setq i (1+ i))
-    )
-  )
-
-  (setq	Sel (ssget "_W"
-		   PtMin
-		   PtMax
-		   '((0 . "ARC,LINE"))
-	    )
-	i   0
-  )
-
-  (command "pedit" "m" Sel "")
-  (command "j" 0.1 "")
-
-  (setq	PtMin (mapcar '+ PtMin '(10 10))
-	PtMax (mapcar '- PtMax '(10 10))
-  )
-
-  (setq	Sel (ssget "_W"
-		   PtMin
-		   PtMax
-		   '((0 . "LWPOLYLINE"))
-	    )
-	i   0
-  )
-
-  (setvar "FILLETRAD" 0.26)
-
-  (if Sel
-    (repeat (sslength Sel)
-      (setq pl (ssname Sel i))
-      ;; Nettoyage de la polyligne
-      ;; On supprime le dernier sommet si celui ci est superposé avec le premier
-      ;; et on la déclare fermée
-      (setq data (entget pl)
-	    pts	 (dxf '10 Data)
-      )
-      (cond
-	((and
-	   (= (cdr (assoc 0 data)) "LWPOLYLINE")
-	   (apply 'and
-		  (mapcar (function (lambda (x1 x2) (equal x1 x2 1e-9)))
-			  (car pts)
-			  (last pts)
-		  )
-	   )
-	 )
-	 (setq data (reverse data)
-	       data (remove-ele (assoc 10 data) data)
-	       data (remove-ele (assoc 40 data) data)
-	       data (remove-ele (assoc 41 data) data)
-	       data (remove-ele (assoc 42 data) data)
-	       data (reverse data)
-	       data (subst (cons 70 1) (assoc 70 data) data)
-	 )
-	 (entmod data)
-	 (setq modifier t)
-	)
-	((= (cdr (assoc 70 data)) 1)
-	 (setq modifier t)
-	)
-      )
-      (if modifier
-	(progn
-	  (Raccord_Polyligne pl)
-	)
-      )
-      (setq modifier nil)
-      (setq i (1+ i))
-    )
-  )
-  (princ)
-
+(defun c:tt ()
+  (PtToBulge (getpoint) (getpoint) (getpoint))
 )
-(defun c:tst ()
+
+
+(defun c:tstt ()
+  (setvar "FILLETRAD" 500)
   (Raccord_Polyligne (car (entsel)))
 )
 
-(defun Raccord_Polyligne (ent / data pts ferme rayon enttmp lst seg)
+(defun Raccord_Polyligne (ent / data pts ferme rayon enttmp lst)
+
+  ;; Nettoyage de la polyligne
+  ;; On supprime le dernier sommet si celui ci est superposé avec le premier
+  ;; et on la déclare fermée
+  (setq	data (entget ent)
+	pts  (dxf '10 Data)
+  )
+  (cond
+    ((and
+       (= (cdr (assoc 0 data)) "LWPOLYLINE")
+       (apply 'and
+	      (mapcar (function (lambda (x1 x2) (equal x1 x2 1e-9)))
+		      (car pts)
+		      (last pts)
+	      )
+       )
+     )
+     (setq data	(reverse data)
+	   data	(remove-ele (assoc 10 data) data)
+	   data	(remove-ele (assoc 40 data) data)
+	   data	(remove-ele (assoc 41 data) data)
+	   data	(remove-ele (assoc 42 data) data)
+	   data	(reverse data)
+	   data	(subst (cons 70 1) (assoc 70 data) data)
+     )
+     (entmod data)
+    )
+  )
 
   ;; Pour éviter d'avoir des pb de raccord
   ;; On décale la polyligne dans les deux sens.
@@ -123,23 +53,15 @@
 	ferme (= (cdr (assoc 70 data)) 1)
   )
 
+
+
   (if (= (cdr (assoc 0 data)) "LWPOLYLINE")
     (progn
       (setq lst	 (ListeSegments ent)
 	    data (car lst)
 	    data (if (> (length data) 2)
-		   (setq data (ArcToPoint
-				(car data)
-				(cadr data)
-				(caddr data)
-				(cadddr data)
-				(last data)
-			      )
-			 data (list (cons 10 (cadr data))
-				    (list 42 (car data) (last data))
-			      )
-		   )
-		   (mapcar 'cons '(10) data)
+		   (mapcar 'cons '(10 42) data)
+		   (mapcar 'cons '(10 10) data)
 		 )
       )
       (mapcar
@@ -163,28 +85,16 @@
 		    (if	(equal (distance pt1 pt2) 0 1e-9)
 		      (setq
 			data (append data
-				     (list (cons 10 pt1)
-					   (list 42 (car seg2) (last seg2))
-				     )
+				     (list (cons 10 pt1) (cons 42 (cadr seg2)))
 			     )
 		      )
-		      (setq data
-			     (append
-			       data
-			       (list
-				 (cons 10 pt1)
-				 (list
-				   42
-				   int
-				   (if (< (distance (car seg1) int) (cadddr seg1))
-				     (last seg1)
-				     (not (last seg1))
-				   )
+		      (setq data (append data
+					 (list (cons 10 pt1)
+					       (cons 42 int)
+					       (cons 10 pt2)
+					       (cons 42 (cadr seg2))
+					 )
 				 )
-				 (cons 10 pt2)
-				 (list 42 (car seg2) (last seg2))
-			       )
-			     )
 		      )
 		    )
 	       )
@@ -207,22 +117,12 @@
 		    (setq pt2 (ProjeterPointSurLigne seg2 int))
 		    (if	(equal (distance pt1 pt2) 0 1e-9)
 		      (setq data (append data (list (cons 10 pt1))))
-		      (setq data
-			     (append
-			       data
-			       (list
-				 (cons 10 pt1)
-				 (list
-				   42
-				   int
-				   (if (< (distance (car seg1) int) (cadddr seg1))
-				     (last seg1)
-				     (not (last seg1))
-				   )
+		      (setq data (append data
+					 (list (cons 10 pt1)
+					       (cons 42 int)
+					       (cons 10 pt2)
+					 )
 				 )
-				 (cons 10 pt2)
-			       )
-			     )
 		      )
 		    )
 	       )
@@ -245,21 +145,16 @@
 		    (if	(equal (distance pt1 pt2) 0 1e-9)
 		      (setq
 			data (append data
-				     (list (cons 10 pt1)
-					   (list 42 (car seg2) (last seg2))
-				     )
+				     (list (cons 10 pt1) (cons 42 (cadr seg2)))
 			     )
 		      )
-		      (setq
-			data (append
-			       data
-			       (list
-				 (cons 10 pt1)
-				 (list 42 int (trigo (car seg1) (cadr seg1) int))
-				 (cons 10 pt2)
-				 (list 42 (car seg2) (last seg2))
-			       )
-			     )
+		      (setq data (append data
+					 (list (cons 10 pt1)
+					       (cons 42 int)
+					       (cons 10 pt2)
+					       (cons 42 (cadr seg2))
+					 )
+				 )
 		      )
 		    )
 	       )
@@ -281,57 +176,53 @@
 		    (setq pt2 (ProjeterPointSurLigne seg2 int))
 		    (if	(equal (distance pt1 pt2) 0 1e-9)
 		      (setq data (append data (list (cons 10 pt1))))
-		      (setq
-			data (append
-			       data
-			       (list
-				 (cons 10 pt1)
-				 (list 42
-				       int
-				       (trigo (car seg1) (cadr seg1) int)
+		      (setq data (append data
+					 (list (cons 10 pt1)
+					       (cons 42 int)
+					       (cons 10 pt2)
+					 )
 				 )
-				 (cons 10 pt2)
-			       )
-			     )
 		      )
 		    )
 	       )
 	      )
 	    )
+	    (and int
+		 (make_point int 0)
+		 (make_point pt1 0)
+		 (make_point pt2 0)
+	    )
+	    (redraw)
 	  )
 	)
-	lst
-	(rot1 lst)
+	(if ferme
+	  lst
+	  (butlast lst)
+	)
+	(if ferme
+	  (rot1 lst)
+	  (cdr lst)
+	)
       )
-      (setq data (if (= (length (car lst)) 2)
-		   (cdr data)
-		   (cddr data)
-		 )
-	    data (append
-		   (list (car data))
-		   (mapcar
-		     (function
-		       (lambda (pt1 c pt2)
-			 (if (= (car c) 42)
-			   (cons 42
-				 (PtToBulge (cadr c) (cdr pt1) (cdr pt2) (last c))
-			   )
-			   c
-			 )
-		       )
-		     )
-		     data
-		     (rot1 data)
-		     (rot2 data)
-		   )
-		 )
-	    data (butlast data)
+      (setq data
+	     (cons
+	       (car data)
+	       (butlast	(mapcar	(function (lambda (pt1 c pt2)
+					    (if	(= (car c) 42)
+					      (cons 42 (PtToBulge c pt1 pt2))
+					      c
+					    )
+					  )
+				)
+				data
+				(rot1 data)
+				(rot2 data)
+			)
+	       )
+	     )
       )
+
       (CreerPloyligne data ferme)
-      (setq data (entget ent)
-	    data (subst '(8 . "EFFACER") (assoc 8 data) data)
-	    )
-      (entmod data)
     )
   )
   (princ)
@@ -370,7 +261,8 @@
 ;; PROJETERPOINTSURARC
 ;; Renvoi le point projeté sur l'arc
 (defun ProjeterPointSurArc (Arc Pt)
-  (setq	ct  (car Arc)
+  (setq	Arc (BulgeToArc (car Arc) (caddr Arc) (cadr Arc))
+	ct  (car Arc)
 	ang (angle ct Pt)
 	ptp (polar ct ang (cadddr Arc))
   )
@@ -396,8 +288,9 @@
 
 ;; DECALERARC
 ;; Renvoi un arc décalé
-(defun DecalerArc (Arc Dist Cote / r)
-  (setq	r    (cadddr Arc)
+(defun DecalerArc (Arc Dist Cote / r data)
+  (setq	Arc  (BulgeToArc (car Arc) (caddr Arc) (cadr Arc))
+	r    (cadddr Arc)
 	Dist (*	(if (xor Cote (last Arc))
 		  -1
 		  1
@@ -406,7 +299,15 @@
 	     )
   )
   (if (< Dist r)
-    (subst (+ r Dist) r Arc)
+    (setq data (subst (+ r Dist) r Arc)
+	  data (ArcToBulge
+		 (car data)
+		 (cadr data)
+		 (caddr data)
+		 (cadddr data)
+		 (last data)
+	       )
+    )
   )
 )
 
@@ -434,7 +335,9 @@
 (defun IntersArcArc (Arc1   Arc2   /	  ct1	 ct2	r1     r2     ang1
 		     ang2   c	   alpha  beta	 depA1	arrA1  depA2  arrA2
 		    )
-  (setq	ct1   (car Arc1)
+  (setq	Arc1  (BulgeToArc (car Arc1) (caddr Arc1) (cadr Arc1))
+	Arc2  (BulgeToArc (car Arc2) (caddr Arc2) (cadr Arc2))
+	ct1   (car Arc1)
 	ct2   (car Arc2)
 	r1    (cadddr Arc1)
 	r2    (cadddr Arc2)
@@ -505,7 +408,8 @@
 ;; Renvoi le point d'intersection entre un arc et une ligne
 (defun IntersArcLigne
 		      (Arc Ligne / ct r pt ang dst alpha depA arrA depL arrL)
-  (setq	ct   (car Arc)
+  (setq	Arc  (BulgeToArc (car Arc) (caddr Arc) (cadr Arc))
+	ct   (car Arc)
 	r    (cadddr Arc)
 	pt   (list (- (+ (car ct) (cadar Ligne)) (cadadr Ligne))
 		   (- (+ (cadr ct) (caadr Ligne)) (caar Ligne))
@@ -582,7 +486,7 @@
 	     Pt2 (nth No Points)
 	     Lst (if (zerop (setq B (nth (1- No) Bulge)))
 		   (list Pt1 Pt2)
-		   (BulgeToArc Pt1 Pt2 B)
+		   (list Pt1 B Pt2)
 		 )
        )
   )
@@ -611,7 +515,7 @@
 	      Lst (append Lst
 			  (list	(if (zerop (setq B (nth (1- No) Bulge)))
 				  (list Pt1 Pt2)
-				  (BulgeToArc Pt1 Pt2 B)
+				  (list Pt1 B Pt2)
 				)
 			  )
 		  )
@@ -630,102 +534,4 @@
   (and (>= AngleTst (- 0 1e-9))
        (<= AngleTst (+ (ang<2pi (- AngleArr AngleDep)) 1e-9))
   )
-)
-
-
-
-;;;===================================================================================
-
-(defun reverse_pline (ent / e_lst vtx v_lst p_lst l_vtx)
-  (setq e_lst (entget ent))
-  (cond
-    ((= (cdr (assoc 0 e_lst)) "POLYLINE")
-     (setq vtx (entnext ent))
-     (while (= (cdr (assoc 0 (entget vtx))) "VERTEX")
-       (setq v_lst (cons (entget vtx) v_lst)
-	     vtx   (entnext vtx)
-       )
-     )
-    )
-    ((= (cdr (assoc 0 e_lst)) "LWPOLYLINE")
-     (setq p_lst (vl-remove-if-not
-		   '(lambda (x)
-		      (member (car x) '(10 40 41 42))
-		    )
-		   e_lst
-		 )
-	   e_lst (vl-remove-if
-		   '(lambda (x)
-		      (member x p_lst)
-		    )
-		   e_lst
-		 )
-     )
-     (while p_lst
-       (setq v_lst (cons
-		     (list (car p_lst) (cadr p_lst) (caddr p_lst) (cadddr p_lst))
-		     v_lst
-		   )
-	     p_lst (member (assoc 10 (cdr p_lst)) (cdr p_lst))
-       )
-     )
-    )
-  )
-  (setq	l_vtx (last v_lst)
-	l_vtx (subst (cons 40 (cdr (assoc 41 (car v_lst))))
-		     (assoc 40 l_vtx)
-		     l_vtx
-	      )
-	l_vtx (subst (cons 41 (cdr (assoc 40 (car v_lst))))
-		     (assoc 41 l_vtx)
-		     l_vtx
-	      )
-	l_vtx (subst (cons 42 (- (cdr (assoc 42 (car v_lst)))))
-		     (assoc 42 l_vtx)
-		     l_vtx
-	      )
-  )
-  (setq	v_lst
-	 (mapcar
-	   '(lambda (x y)
-	      (setq x (subst (cons 40 (cdr (assoc 41 y))) (assoc 40 x) x)
-		    x (subst (cons 41 (cdr (assoc 40 y))) (assoc 41 x) x)
-		    x (subst (cons 42 (- (cdr (assoc 42 y)))) (assoc 42 x) x)
-	      )
-	    )
-	   v_lst
-	   (cdr v_lst)
-	 )
-  )
-  (if (= (logand 1 (cdr (assoc 70 e_lst))) 1)
-    (setq v_lst (append (list l_vtx) v_lst))
-    (setq v_lst (append v_lst (list l_vtx)))
-  )
-  (cond
-    ((= (cdr (assoc 0 e_lst)) "POLYLINE")
-     (mapcar 'entmake
-	     (append (list e_lst) v_lst (list (entget vtx)))
-     )
-     (entdel ent)
-    )
-    ((= (cdr (assoc 0 e_lst)) "LWPOLYLINE")
-     (setq e_lst (append e_lst (apply 'append v_lst)))
-     (entmod e_lst)
-    )
-  )
-)
-
-;;; R_PLINE Fonction d'appel
-
-(defun c:rp (/ ent)
-  (while (not (setq ent (car (entsel)))))
-  (if (or (= (cdr (assoc 0 (entget ent))) "LWPOLYLINE")
-	  (and (= (cdr (assoc 0 (entget ent))) "POLYLINE")
-	       (zerop (logand 240 (cdr (assoc 70 (entget ent)))))
-	  )
-      )
-    (reverse_pline ent)
-    (prompt "\nEntité non valide")
-  )
-  (princ)
 )

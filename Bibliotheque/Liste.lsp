@@ -78,6 +78,8 @@
 ;;;        (rotation par un)
 (defun rot1 (lst) (append (cdr lst) (list (car lst))))
 
+(defun rot2 (lst) (rot1 (rot1 lst)))
+
 ;;; DIVISE_ELE
 ;;; Divise une liste en sous-liste par l'élément ele
 (defun divise_ele (ele lst)
