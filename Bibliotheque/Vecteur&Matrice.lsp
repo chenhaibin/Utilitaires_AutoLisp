@@ -83,6 +83,26 @@
   )
 )
 
+;; COLINEAR
+
+(defun colinear	(v1 v2 fuzz)
+  (cond
+    ((or (and (equal (car v1) 0 fuzz) (equal (car v2) 0 fuzz))
+	 (and (equal (cadr v1) 0 fuzz) (equal (cadr v2) 0 fuzz))
+     )
+     t
+    )
+    ((or (equal (car v1) 0 fuzz)
+	 (equal (car v2) 0 fuzz)
+     )
+     nil
+    )
+    (t
+     (equal (/ (cadr v1) (car v1)) (/ (cadr v2) (car v2)) fuzz)
+    )
+  )
+)
+
 ;; NORM_3PTS (gile)
 ;; Retourne le vecteur normal du plan défini par 3 points
 ;;
@@ -153,12 +173,12 @@
 ;; Returns the midpoint of two points
 
 (defun mid (a b)
-    (mapcar (function (lambda (a b) (/ (+ a b) 2.0))) a b)
+  (mapcar (function (lambda (a b) (/ (+ a b) 2.0))) a b)
 )
 
 ;; Trigo  -  (gile)
 
-(defun Trigo ( p1 p2 p3 )
+(defun Trigo (p1 p2 p3)
   (< (sin (- (angle p1 p2) (angle p1 p3))) -1e-14)
 )
 
@@ -167,12 +187,12 @@
 ;; Project Point onto Line  -  Lee Mac
 ;; Projects pt onto the line defined by p1,p2
 
-(defun ProjectPointToLine ( pt p1 p2 / nm )
-    (setq nm (mapcar '- p2 p1)
-          p1 (trans p1 0 nm)
-          pt (trans pt 0 nm)
-    )
-    (trans (list (car p1) (cadr p1) (caddr pt)) nm 0)
+(defun ProjectPointToLine (pt p1 p2 / nm)
+  (setq	nm (mapcar '- p2 p1)
+	p1 (trans p1 0 nm)
+	pt (trans pt 0 nm)
+  )
+  (trans (list (car p1) (cadr p1) (caddr pt)) nm 0)
 )
 
 ;; LINEARP (gile)
@@ -365,7 +385,9 @@
 ;; Evalue si une matrice de transformation (3X3 ou 4X4) a un échelle uniforme
 
 (defun uniform-p (m)
-  (and (or (= 3 (length m)) (setq m (mapcar 'VMbutlast (VMbutlast m))))
+  (and (or (= 3 (length m))
+	   (setq m (mapcar 'VMbutlast (VMbutlast m)))
+       )
        (vl-every
 	 (function
 	   (lambda (v)
@@ -708,7 +730,7 @@
 ;;
 ;; Arguments : la liste et l'indice de l'élément à supprimer
 
-(defun VMremove-i	(ind lst)
+(defun VMremove-i (ind lst)
   (if (or (zerop ind) (null lst))
     (cdr lst)
     (cons (car lst) (VMremove-i (1- ind) (cdr lst)))

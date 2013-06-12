@@ -1,3 +1,6 @@
+(vl-load-com)
+
+
 ;;; Renvoi le coté sur lequel se situe un point
 ;;; début : T
 ;;; fin : nil
@@ -61,6 +64,18 @@
   )
 )
 
+;;; Renvoi le point de depart et d'arrivé
+(defun Courbe-PtDepartPtArrive (Courbe)
+  (list	(V2D
+	  (vlax-curve-getStartPoint (vlax-ename->vla-object Courbe))
+	)
+	(V2D
+	  (vlax-curve-getEndPoint (vlax-ename->vla-object Courbe))
+	)
+  )
+)
+
+
 
 ;;; Renvoi la liste des points aux distances données à partir du debut ou de la fin
 (defun Courbe-ListePointsAuxDistances (Courbe lDist Fin)
@@ -95,34 +110,33 @@
 
 ;;; Renvoi la derivee 1 d'une courbe
 (defun Courbe-Derivee1 (Courbe Param /)
-  (V2D (vlax-curve-getFirstDeriv Courbe Param))
+  (V2D (vlax-curve-getFirstDeriv
+	 (vlax-ename->vla-object Courbe)
+	 Param
+       )
+  )
 )
 
 ;;; Renvoi la derivee 2 d'une courbe
 (defun Courbe-Derivee2 (Courbe Param /)
-  (V2D (vlax-curve-getSecondDeriv Courbe Param))
+  (V2D (vlax-curve-getSecondDeriv
+	 (vlax-ename->vla-object Courbe)
+	 Param
+       )
+  )
 )
 
 ;;; Renvoi la longueur d'une courbe
-(defun Courbe-Longueur (Courbe / prop)
-  (cond
-    ((member '(0 . "ARC") (entget Courbe))
-     (setq prop 'ArcLength)
-    )
-    ((member '(0 . "CIRCLE") (entget Courbe))
-     (setq prop 'Circumference)
-    )
-    ((member '(0 . "LWPOLYLINE") (entget Courbe))
-     (setq prop 'Length)
-    )
-    ((member '(0 . "LINE") (entget Courbe))
-     (setq prop 'Length)
-    )
-  )
-  (if prop
-    (float
-      (vlax-get-property (vlax-ename->vla-object Courbe) prop)
-    )
+(defun Courbe-Longueur (Courbe / prop vCourbe)
+  (setq vCourbe (vlax-ename->vla-object Courbe))
+  (- (vlax-curve-getDistAtParam
+       vCourbe
+       (vlax-curve-getEndParam vCourbe)
+     )
+     (vlax-curve-getDistAtParam
+       vCourbe
+       (vlax-curve-getStartParam vCourbe)
+     )
   )
 )
 
@@ -146,6 +160,8 @@
   )
 )
 
+
+;;; Decaler une courbe
 (defun Courbe-Decaler (Courbe Dist Cote)
   (setq	Dist (*	Dist
 		(if Cote
@@ -154,115 +170,9 @@
 		)
 	     )
   )
-  (vl-catch-all-apply 'vla-Offset (list (vlax-ename->vla-object Courbe) Dist))
+  (vl-catch-all-apply
+    'vla-Offset
+    (list (vlax-ename->vla-object Courbe) Dist)
+  )
   (entlast)
-)
-
-;; Bulge to Arc  -  Lee Mac
-;; p1 - start vertex
-;; p2 - end vertex
-;; b  - bulge
-;; dir  - trigo
-;; Returns: (<center> <start angle> <end angle> <radius> <dir>)
-
-(defun BulgeToArc (p1 p2 b / c r)
-  (setq	r (/ (* (distance p1 p2) (1+ (* b b))) 4 b)
-	c (polar p1 (+ (angle p1 p2) (- (/ pi 2) (* 2 (atan b)))) r)
-  )
-  (if (minusp b)
-    (list c (angle c p2) (angle c p1) (abs r) nil)
-    (list c (angle c p1) (angle c p2) (abs r) t)
-  )
-)
-
-;; Arc to Bulge  -  Lee Mac
-;; c     - center
-;; a1,a2 - start, end angle
-;; r     - radius
-;; Returns: (<vertex> <bulge> <vertex>)
-
-(defun ArcToBulge (c a1 a2 r Dir)
-  (setq	ang (if	Dir
-	      (AngleTrigo a1 a2)
-	      (AngleTrigo a2 a1)
-	    )
-  )
-  (list
-    (polar c a1 r)
-    (* (if Dir
-	 1
-	 -1
-       )
-       (tan (/ ang
-	       4.0
-	    )
-       )
-    )
-    (polar c a2 r)
-  )
-)
-
-;; Point to Bulge
-;; c     - center
-;; a1,a2 - start, end angle
-;; r     - radius
-;; Returns: <bulge>
-
-(defun PtToBulge (c pt1 pt2 Dir)
-  (setq	ang (if	Dir
-	      (AngleTrigo (angle c pt1) (angle c pt2))
-	      (AngleTrigo (angle c pt2) (angle c pt1))
-	    )
-  )
-  (* (if Dir
-       1
-       -1
-     )
-     (tan (/ ang
-	     4.0
-	  )
-     )
-  )
-)
-
-;; Angle to Bulge
-;; c     - center
-;; a1,a2 - start, end angle
-;; r     - radius
-;; Returns: <bulge>
-
-(defun AngleToBulge (c a1 a2 Dir)
-  (setq	ang (if	Dir
-	      (AngleTrigo a1 a2)
-	      (AngleTrigo a2 a1)
-	    )
-  )
-  (* (if Dir
-       1
-       -1
-     )
-     (tan (/ ang
-	     4.0
-	  )
-     )
-  )
-)
-
-;; Arc to Point
-;; c     - center
-;; a1,a2 - start, end angle
-;; r     - radius
-;; Returns: (<vertex> <vertex> <vertex>)
-
-(defun ArcToPoint (c a1 a2 r Dir)
-  (list
-    c
-    (polar c a1 r)
-    (polar c a2 r)
-    Dir
-  )
-)
-
-(defun AngleTrigo (AngleDep AngleArr)
-  (ang<2pi (- AngleArr AngleDep))
 )
